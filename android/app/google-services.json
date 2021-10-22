@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "70830498410",
+    "project_id": "fluttermusic-1318f",
+    "storage_bucket": "fluttermusic-1318f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70830498410:android:39ea7d492d86efb680a013",
+        "android_client_info": {
+          "package_name": "com.example.fluttermusic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "70830498410-73oi3d0ei783h2cl1de587c91vrctial.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9b9YoFtaQM8U4EX3-sLJEn-BtbK3bjKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "70830498410-73oi3d0ei783h2cl1de587c91vrctial.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

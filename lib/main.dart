@@ -33,7 +33,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      //debugShowCheckedModeBanner: false,
+
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -112,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       onTap: (){
                         Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return Listen();
+                          return Listen(music: music,);
                         }));
                       },
                     );

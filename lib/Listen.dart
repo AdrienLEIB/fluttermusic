@@ -9,7 +9,8 @@ import 'Model/music.dart';
 
 class Listen extends StatefulWidget{
   Music music;
-  Listen({required Music this.music});
+  int index;
+  Listen({required Music this.music, required int this.index});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -96,7 +97,8 @@ class ListenState extends State<Listen>{
                 icon: Icon(Icons.fast_rewind),
                 onPressed: () {
                   lecture = statut.playing;
-                  rewind();
+                  List documents = snapshots.data!.docs;
+                  rewind(documents);
                 },
 
               ),
@@ -124,10 +126,15 @@ class ListenState extends State<Listen>{
                 onPressed: () {
                   List documents = snapshots.data!.docs;
                   int maxdoc = documents.length;
-                  int index = random.nextInt(maxdoc);
+                  // int index = random.nextInt(maxdoc);
+                  int index = widget.index +1;
+                  if (index>=maxdoc){
+                    index = 0;
+                  }
+
                   Music music = Music(documents[index]);
                   Navigator.push(context, MaterialPageRoute(builder: (context){
-                    return Listen(music: music,);
+                    return Listen(music: music,index: index);
                   }));
                 },
               ),
@@ -183,7 +190,7 @@ class ListenState extends State<Listen>{
 
   }
 
-  rewind(){
+  rewind(List documents){
     if(position>= Duration(seconds: 5)){
       setState(() {
         audioPlayer.stop();
@@ -191,6 +198,21 @@ class ListenState extends State<Listen>{
         position = new Duration(seconds: 0);
         audioPlayer.play(widget.music.path_song);
       });
+    }else{
+
+
+      int maxdoc = documents.length;
+      int index = widget.index -1;
+      if (index<0){
+        index = maxdoc-1;
+      }
+      Music music = Music(documents[index]);
+      Navigator.push(context, MaterialPageRoute(builder: (context){
+        return Listen(music: music,index: index);
+      }
+      )
+
+      );
     }
   }
 

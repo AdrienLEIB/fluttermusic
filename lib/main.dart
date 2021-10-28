@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       onTap: (){
                         Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return Listen(music: music,);
+                          return Listen(music: music,index: index);
                         }));
                       },
                     );

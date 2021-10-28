@@ -18,6 +18,7 @@ class Listen extends StatefulWidget{
 
 class ListenState extends State<Listen>{
   double position= 0.0;
+  bool isPlay = false;
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -54,7 +55,15 @@ class ListenState extends State<Listen>{
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.fast_rewind),
-            Icon(Icons.play_arrow, size:40),
+            IconButton(
+              icon:(isPlay) ?   Icon(Icons.pause, size: 40) : Icon(Icons.play_arrow, size: 40),
+              onPressed: (){
+                setState(()
+                {
+                 isPlay = !isPlay;
+                });
+              },
+            ),
             Icon(Icons.fast_forward)
           ],
         ),

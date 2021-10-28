@@ -1,14 +1,15 @@
 import 'dart:async';
-
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'Func/firestoreHelper.dart';
 import 'Model/music.dart';
 
 
 class Listen extends StatefulWidget{
   Music music;
   Listen({required Music this.music});
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -16,17 +17,40 @@ class Listen extends StatefulWidget{
   }
 
 }
-
-
 class ListenState extends State<Listen>{
-  // double position= 0.0;
-  bool isPlay = false;
-  statut lecture=statut.rewind;
-  // AudioPlayer audioPlayer = AudioPlayer();
-  Duration position = Duration(seconds: 0);
+
+  //Variable
+
+  statut lecture=statut.stopped;
+  final AudioPlayer audioPlayer = AudioPlayer();
+  Duration position= Duration(seconds: 0);
   late StreamSubscription positionStream;
   late StreamSubscription stateStream;
-  late AudioPlayer audioPlayer;
+  Random random = Random();
+
+
+
+
+
+
+
+
+
+
+
+
+  Duration duree = Duration(seconds: 0);
+  late PlayerState pointeur;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    configurationPlayer();
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,112 +58,193 @@ class ListenState extends State<Listen>{
     return Scaffold(
       appBar: AppBar(
         shadowColor: Colors.blueAccent,
-        title: Text(widget.music.title_album),
+        title: Text(widget.music.title),
       ),
-      body:
-        BodyState(),
+      body: BodyState(),
     );
   }
 
   Widget BodyState(){
-    return Column(
-      children: [
-        Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width/2,
-            height: 250,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
-                image: NetworkImage(
-                  widget.music.image
-                ),
-                fit: BoxFit.fill,
-              )
-            )
-          ),
-        ),
-        Text('${widget.music.author} : ${widget.music.title_album}'),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.fast_rewind),
-            // (lecture==statut.stopped)?Icon(Icons.play_arrow, size:40):Icon(Icons.stop_circle),
-            IconButton(
-              icon:(isPlay) ?   Icon(Icons.pause, size: 40) : Icon(Icons.play_arrow, size: 40),
-              onPressed: (){
-                setState(()
-                {
-                 isPlay = !isPlay;
-                 lecture == statut.playing ? pause() : lecture==statut.rewind ? play() : print('toto');
-                });
-              },
+    return StreamBuilder<QuerySnapshot>(
+    stream: firestoreHelper().firescloud_music.snapshots(),
+    builder: ( context,  snapshots) {
+      return Column(
+        children: [
+          SizedBox(height: 10,),
+          Center(
+            child: Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width / 1.2,
+              height: 150,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                      image: NetworkImage(widget.music.image),
+                      fit: BoxFit.fill
+                  )
+              ),
             ),
-            Icon(Icons.fast_forward)
-          ],
-        ),
-        Slider.adaptive(
-            value: position.inSeconds.toDouble(),
-            min: 0.0,
-            max: widget.music.time,
-            activeColor: Colors.blueAccent,
-            inactiveColor: Colors.cyanAccent,
-            onChanged: (va){
-              setState(() {
-                Duration time = Duration(seconds: va.toInt());
-                position = time;
-              });
-            }),
-      ],
+          ),
+          Text(widget.music.title),
+          Text(widget.music.author),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.fast_rewind),
+                onPressed: () {
+                  lecture = statut.playing;
+                  rewind();
+                },
+
+              ),
+              (lecture == statut.stopped) ? IconButton(
+                icon: Icon(Icons.play_arrow, size: 40),
+                onPressed: () {
+                  setState(() {
+                    lecture = statut.paused;
+                    play();
+                  });
+                },
+              ) :
+              IconButton(
+                icon: Icon(Icons.pause, size: 40,),
+                onPressed: () {
+                  //musique en pause
+                  setState(() {
+                    lecture = statut.stopped;
+                    pause();
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.fast_forward),
+                onPressed: () {
+                  List documents = snapshots.data!.docs;
+                  int maxdoc = documents.length;
+                  int index = random.nextInt(maxdoc);
+                  Music music = Music(documents[index]);
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    return Listen(music: music,);
+                  }));
+                },
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(duree.inMinutes.toString()),
+              Text("0.0")
+
+            ],
+          ),
+          Slider.adaptive(
+              max: 100,
+              min: 0,
+              value: position.inSeconds.toDouble(),
+              activeColor: Colors.blueAccent,
+              inactiveColor: Colors.cyanAccent,
+              onChanged: (va) {
+                setState(() {
+                  Duration duree = Duration(seconds: va.toInt());
+                  position = duree;
+                });
+                print(position);
+              })
+
+        ],
+      );
+    }
     );
   }
 
-  play() async{
-    configurationPlayer();
-    // await audioPlayer.stop();
-    int result = await audioPlayer.play(widget.music.path_song);
-    if (result == 1){
-      setState(() {
-        lecture = statut.playing;
-      });
-    };
+
+
+  Future play() async {
+    if(position>Duration(seconds: 0)){
+      await audioPlayer.play(widget.music.path_song,position: position);
+    }
+    else{
+      await audioPlayer.play(widget.music.path_song,);
+    }
+
+
+    //configurationPlayer();
 
   }
 
-  pause() async{
-    int result = await audioPlayer.stop();
-    if (result == 1) {
-      setState(() {
-        lecture = statut.rewind;
-      });
-    };
+  Future pause() async {
+    await audioPlayer.pause();
+    audioPlayer.seek(position);
+    //configurationPlayer();
 
   }
+
+  rewind(){
+    if(position>= Duration(seconds: 5)){
+      setState(() {
+        audioPlayer.stop();
+        audioPlayer.seek(Duration(seconds: 0));
+        position = new Duration(seconds: 0);
+        audioPlayer.play(widget.music.path_song);
+      });
+    }
+  }
+
+
 
   configurationPlayer(){
-    audioPlayer = AudioPlayer();
-    audioPlayer.setVolume(1.0);
+    //audioPlayer = new AudioPlayer();
     positionStream = audioPlayer.onAudioPositionChanged.listen((event) {
       setState(() {
-        position = event;
-      });
-      stateStream = audioPlayer.onPlayerStateChanged.listen((event) {
-        setState(() {
-          if(event == statut.playing){
-
-          }
-        });
+        position =event;
       });
     });
+    stateStream = audioPlayer.onPlayerStateChanged.listen((event) {
+      if(event == statut.playing){
+        setState(() async {
+
+          duree = audioPlayer.getDuration() as Duration;
+          print(duree);
+        });
+
+
+
+      } else if(event == statut.stopped){
+        setState(() {
+          lecture = statut.stopped;
+
+        });
+      }
+
+
+    },onError: (message){
+      print("erreur : $message");
+      setState(() {
+        lecture = statut.stopped;
+        position = Duration(seconds: 0);
+        duree = Duration(seconds: 0);
+      });
+    }
+    );
+
+
   }
+
 }
+
+
+
+
 
 
 enum statut{
   playing,
   stopped,
+  paused,
   rewind,
-  forward,
+  forward
 }
-
-

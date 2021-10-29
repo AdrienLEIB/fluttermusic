@@ -8,4 +8,10 @@ class firestoreHelper{
   final firestorage = FirebaseStorage.instance;
 
   final firescloud_music = FirebaseFirestore.instance.collection("Music");
+
+  addMusic(Map <String,dynamic> map){
+    firescloud_music.add(map);
+  }
+
+
 }

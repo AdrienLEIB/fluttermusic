@@ -272,7 +272,7 @@ class ListenState extends State<Listen>{
     await AwesomeNotifications().getLocalTimeZoneIdentifier();
     print(localTimeZone);
 
-    AwesomeNotifications().createNotification(
+    await AwesomeNotifications().createNotification(
         content: NotificationContent(
             id: 10,
             channelKey: 'basic_channel',

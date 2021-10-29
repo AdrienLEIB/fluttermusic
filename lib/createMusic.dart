@@ -10,7 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To F
 import 'package:flutter/material.dart';// For Image Picker
 import 'package:path/path.dart' as Path;
 import 'Model/music.dart';
-
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class createMusic extends StatefulWidget{
 
@@ -210,6 +210,14 @@ class createMusicState extends State<createMusic>{
                 int index = 0;
                 Navigator.push(context, MaterialPageRoute(
                     builder: (BuildContext context){
+                      AwesomeNotifications().createNotification(
+                          content: NotificationContent(
+                              id:10,
+                              channelKey: 'basic_channel',
+                              title: 'GG for create',
+                              body: 'Genre juste gg'
+                          )
+                      );
                       return MyApp();
                       //return Listen(music: Music(map),index: index);
                     }
@@ -302,5 +310,6 @@ class createMusicState extends State<createMusic>{
     UploadTask uploadTask = reference.putFile(file);
     TaskSnapshot snapshot = await uploadTask;
     path_song = await snapshot.ref.getDownloadURL();
+
   }
 }

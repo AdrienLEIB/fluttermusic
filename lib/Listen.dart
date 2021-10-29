@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -40,6 +41,8 @@ class ListenState extends State<Listen>{
 
 
 
+
+
   Duration duree = Duration(seconds: 0);
   late PlayerState pointeur;
 
@@ -49,6 +52,7 @@ class ListenState extends State<Listen>{
     super.initState();
     configurationPlayer();
   }
+
 
 
 
@@ -160,7 +164,14 @@ class ListenState extends State<Listen>{
                   position = duree;
                 });
                 print(position);
-              })
+              }),
+          IconButton(
+            icon: Icon(Icons.mail, size: 40,),
+            onPressed: () {
+              //musique en pause
+              NotificationProgramme();
+            },
+          ),
 
         ],
       );
@@ -254,6 +265,24 @@ class ListenState extends State<Listen>{
     );
 
 
+  }
+
+  NotificationProgramme() async {
+    String localTimeZone =
+    await AwesomeNotifications().getLocalTimeZoneIdentifier();
+    print(localTimeZone);
+
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
+            id: 10,
+            channelKey: 'basic_channel',
+            title: 'This is my notification 2',
+            body: 'This is my message of my notification 2'),
+        schedule: NotificationCalendar(
+            second: 0,
+            millisecond: 0,
+            timeZone: localTimeZone,
+            repeats: true));
   }
 
 }

@@ -193,7 +193,8 @@ class createMusicState extends State<createMusic>{
           ElevatedButton(
 
               onPressed: (){
-                print(image);
+                uploadProfileImage();
+                uploadSong();
                 Map<String,dynamic> map ={
                   "author":author,
                   "title":title,
@@ -250,9 +251,6 @@ class createMusicState extends State<createMusic>{
       print(_paths!.first.extension);
       _fileName =
       _paths != null ? _paths!.map((e) => e.name).toString() : '...';
-      print("_________________________");
-      print(_paths!.first.path);
-      uploadProfileImage();
 
     });
   }
@@ -265,7 +263,6 @@ class createMusicState extends State<createMusic>{
     UploadTask uploadTask = reference.putFile(file);
     TaskSnapshot snapshot = await uploadTask;
     image = await snapshot.ref.getDownloadURL();
-    print(image);
   }
 
 
@@ -293,9 +290,6 @@ class createMusicState extends State<createMusic>{
       print(_paths_song!.first.extension);
       _fileName =
       _paths != null ? _paths_song!.map((e) => e.name).toString() : '...';
-      print("_________________________");
-      print(_paths_song!.first.path);
-      uploadSong();
 
     });
   }
@@ -308,6 +302,5 @@ class createMusicState extends State<createMusic>{
     UploadTask uploadTask = reference.putFile(file);
     TaskSnapshot snapshot = await uploadTask;
     path_song = await snapshot.ref.getDownloadURL();
-    print(path_song);
   }
 }
